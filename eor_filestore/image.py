@@ -118,7 +118,7 @@ class Variant(object):
         if id.category:
             comps.append(id.category)
         comps.append(_subdirs(id.uuid))
-        comps.append(make_name(id, self.variant))
+        comps.append(id.make_name(self.variant))
 
         return os.path.join(*comps)
 
@@ -148,11 +148,34 @@ class ImageID(object):
             ext=split[-1]
         )
 
+    @classmethod
+    def parse_name(cls, name, category):
+        split = name.split('.')
+        if len(split) not in (3, 4):
+            raise BadNameException(msg='bad name %r' % name)
+
+        # TODO check uuid using regex
+
+        # return (id, variant)
+        return cls(
+            slug=split[0],
+            uuid=split[1],
+            category=category,
+            ext=split[-1]
+        ), None if len(split) == 3 else split[2]
+
     def __init__(self, slug, uuid, category, ext):
         self.slug = slug
         self.uuid = uuid
         self.category = category
         self.ext = ext
+
+    def make_name(self, variant=None):
+        name_split = [self.slug, self.uuid]
+        if variant:
+            name_split.append(variant)
+        name_split.append(self.ext)
+        return '.'.join(name_split)
 
     def __str__(self):
         return ','.join([self.uuid, self.category, self.slug, self.ext])
@@ -160,31 +183,6 @@ class ImageID(object):
     def __repr__(self):
         return 'ImageID(slug={}, uuid={}, category={}, ext={})'.format(
             self.slug, self.uuid, self.category, self.ext)
-
-
-# TODO name comes from the network, so check carefully
-def parse_name(name, category):
-    split = name.split('.')
-    if len(split) not in (3, 4):
-        raise BadNameException(msg='bad name %r' % name)
-
-    # TODO check uuid using regex
-
-    # return (id, variant)
-    return ImageID(
-        slug=split[0],
-        uuid=split[1],
-        category=category,
-        ext=split[-1]
-    ), None if len(split) == 3 else split[2]
-
-
-def make_name(id, variant=None):
-    name_split = [id.slug, id.uuid]
-    if variant:
-        name_split.append(variant)
-    name_split.append(id.ext)
-    return '.'.join(name_split)
 
 
 def _slugify(val, max_len=32):
@@ -225,4 +223,4 @@ def src(request, id, variant=None):
 
     return request.route_url('eor-filestore.get-image',
         category=id.category, a=id.uuid[0], b=id.uuid[1],  # TODO respect SUBDIRS and SUBDIR_CHARS
-        name=make_name(id, variant))
+        name=id.make_name(variant))

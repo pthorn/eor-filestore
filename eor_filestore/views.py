@@ -2,7 +2,7 @@ import cgi
 from pyramid.view import view_config
 from pyramid.response import Response, FileResponse, FileIter, _guess_type
 from pyramid.httpexceptions import HTTPNotFound, HTTPBadRequest
-from .image import Image, parse_name, src
+from .image import Image, ImageID, src
 from .exceptions import StoreException, FileException
 
 import logging
@@ -19,7 +19,7 @@ def get(request):
     image_name = request.matchdict['name']
     category = request.matchdict['category']
 
-    parsed_id, variant = parse_name(image_name, category)
+    parsed_id, variant = ImageID.parse_name(image_name, category)
 
     #try:
     variant = Image(parsed_id).variant(variant)
