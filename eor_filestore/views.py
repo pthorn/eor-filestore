@@ -2,7 +2,9 @@ import cgi
 from pyramid.view import view_config
 from pyramid.response import Response, FileResponse, FileIter, _guess_type
 from pyramid.httpexceptions import HTTPNotFound, HTTPBadRequest
-from .image import Image, ImageID, src
+
+from .image import Image, src
+from .file_id import FileID
 from .exceptions import StoreException, FileException
 
 import logging
@@ -17,9 +19,10 @@ DEFAULT_CATEGORY='images'
 @view_config(route_name='eor-filestore.get-image')
 def get(request):
     image_name = request.matchdict['name']
-    category = request.matchdict['category']
+    category_name = request.matchdict['category']
 
-    parsed_id, variant = ImageID.parse_name(image_name, category)
+    parsed_id, variant = FileID.parse_name(image_name, category_name)
+
 
     #try:
     variant = Image(parsed_id).variant(variant)
