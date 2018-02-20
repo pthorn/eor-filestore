@@ -3,7 +3,10 @@
 import os
 import errno
 import math
+from io import BytesIO
+
 from PIL import Image
+
 from .exceptions import FileException, NotAnImageException
 
 import logging
@@ -43,16 +46,16 @@ def make_thumbnail_crop_to_size(image, size):
     factor = min(float(image.size[0]) / size[0],  float(image.size[1]) / size[1])
     crop_size = (size[0] * factor, size[1] * factor)
 
-    crop = (
-        math.trunc((image.size[0] - crop_size[0]) / 2),
-        math.trunc((image.size[1] - crop_size[1]) / 2),
-        math.trunc((image.size[0] + crop_size[0]) / 2),
-        math.trunc((image.size[1] + crop_size[1]) / 2)
+    crop_window = (
+        math.trunc((image.size[0] - crop_size[0]) / 2),  # left
+        math.trunc((image.size[1] - crop_size[1]) / 2),  # upper
+        math.trunc((image.size[0] + crop_size[0]) / 2),  # right
+        math.trunc((image.size[1] + crop_size[1]) / 2)   # lower
     )
 
     #print '\n----------', 'image.size', image.size, 'thumb_def.size', thumb_def.size, 'factor', factor, 'crop_size', crop_size, 'crop', crop
 
-    image = image.crop(crop)
+    image = image.crop(crop_window)
     image.thumbnail(size, Image.ANTIALIAS)
 
     return image
@@ -87,3 +90,17 @@ def save_image(image, save_path, quality):
                 raise
 
     image.save(save_path, quality=quality)
+
+
+def save_image_to_buffer(image, extension, quality):
+    data = BytesIO()
+    # Pillow uses name attribute to infer image format
+    data.name = 'foo.{}'.format(extension)
+    image.save(data, quality=quality)
+
+    # calculate size
+    data.seek(0, os.SEEK_END)
+    size = data.tell()
+    data.seek(0)
+
+    return data, size

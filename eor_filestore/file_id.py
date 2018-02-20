@@ -1,6 +1,10 @@
 # coding: utf-8
 
 import os
+import re
+import unicodedata
+from uuid import uuid1
+
 from .exceptions import BadNameException
 
 import logging
@@ -67,3 +71,30 @@ class FileID(object):
     def __repr__(self):
         return 'FileID(slug={}, uuid={}, category={}, ext={})'.format(
             self.slug, self.uuid, self.category, self.ext)
+
+
+def src(request, id, variant=None):
+    """
+    :return: URL of the file
+    """
+    if not isinstance(id, FileID):
+        id = FileID.parse(id)
+
+    # TODO '//' + get_setting('static-domain') ?
+
+    return request.route_url('eor-filestore.get-image',
+        category=id.category, a=id.uuid[0], b=id.uuid[1],  # TODO respect SUBDIRS and SUBDIR_CHARS
+        name=id.make_name(variant))
+
+
+def _slugify(val, max_len=32):
+    """
+    from https://github.com/django/django/blob/master/django/utils/text.py#L413
+    unicodedata.normalize(): http://stackoverflow.com/a/14682498/1092084
+    """
+    val = unicodedata.normalize('NFKD', val)
+    val = val.replace('/', '-').replace('\\', '-')  # remove any path separators
+    val = re.sub(r'[\s\.,]+', '-', val, flags=re.U)
+    val = re.sub(r'[^\w-]', '', val, flags=re.U)
+    val = val.strip('-').lower()
+    return val[:max_len]

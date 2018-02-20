@@ -1,4 +1,11 @@
-from .image import src
+from .registry import Registry
+from .file_id import src
+from .category import Category
+from .variant import VariantFactory, Variant
+from .image_variants import AutoThumbnail, Thumbnail
+
+
+registry = Registry()
 
 
 def includeme(config):

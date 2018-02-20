@@ -3,8 +3,8 @@ from pyramid.view import view_config
 from pyramid.response import Response, FileResponse, FileIter, _guess_type
 from pyramid.httpexceptions import HTTPNotFound, HTTPBadRequest
 
-from .image import Image, src
-from .file_id import FileID
+from . import registry
+from .file_id import FileID, src
 from .exceptions import StoreException, FileException
 
 import logging
@@ -21,11 +21,18 @@ def get(request):
     image_name = request.matchdict['name']
     category_name = request.matchdict['category']
 
-    parsed_id, variant = FileID.parse_name(image_name, category_name)
+    # TODO exceptions
+    parsed_id, variant_name = FileID.parse_name(image_name, category_name)
 
+    try:
+        Category = registry.get_category(category_name)
+        variant = Category(parsed_id).get_variant(variant_name)
+    except StoreException as e:
+        log.warn('1 %r', e)  # TODO
+        raise HTTPNotFound()
 
     #try:
-    variant = Image(parsed_id).variant(variant)
+    #variant = Image(parsed_id).variant(variant)
     #except NoImage:
     #    raise HTTPNotFound()
 
@@ -35,12 +42,13 @@ def get(request):
     try:
         data, length = variant.generate()
     except FileException as e:
+        log.warn('2 %r', e)
         raise HTTPNotFound()
     except StoreException as e:
-        log.warn('%r', e)
+        log.warn('2 %r', e)
         raise HTTPNotFound()
 
-    content_type, content_encoding = _guess_type('x.' + variant.image.parsed_id.ext)
+    content_type, content_encoding = _guess_type('x.' + variant.parsed_id.ext)
 
     return Response(
         request=request,
@@ -55,7 +63,7 @@ def get(request):
 @view_config(route_name='eor-filestore.upload-default', renderer='json')
 @view_config(route_name='eor-filestore.upload', renderer='json')
 def upload(request):
-    category = request.matchdict.get('category', DEFAULT_CATEGORY)
+    category_name = request.matchdict.get('category', DEFAULT_CATEGORY)
 
     try:
         fieldstorage = request.params[FILE_PARAM]
@@ -65,16 +73,24 @@ def upload(request):
     if not isinstance(fieldstorage, cgi.FieldStorage):
         raise HTTPBadRequest()
 
+    # try:
+    #     image = Image.new(fieldstorage.filename, fieldstorage.file, category)
+    # except StoreException as e:
+    #     return e.response()
+
     try:
-        image = Image.new(fieldstorage.filename, fieldstorage.file, category)
+        Category = registry.get_category(category_name)
+        category = Category.save_new(fieldstorage.file, fieldstorage.filename)
     except StoreException as e:
         return e.response()
 
     return {
         'status': 'ok',
         'data': {
-            'id': str(image.parsed_id),
-            'src': src(request, image.parsed_id)
+            # 'id': str(image.parsed_id),
+            # 'src': src(request, image.parsed_id)
+            'id': str(category.parsed_id),
+            'src': src(request, category.parsed_id)
         }
     }
 
@@ -82,12 +98,16 @@ def upload(request):
 @view_config(route_name='eor-filestore.delete', renderer='json')
 def delete(request):
     image_name = request.matchdict['name']
+    category_name = request.matchdict['category']
 
-    #try:
-    image = Image.with_name(image_name)
-    image.delete()
-    #except:
-    #    raise HTTPNotFound()
-    # return {'status': 'error', 'message': '...'}
+    # TODO exceptions
+    parsed_id, variant_name = FileID.parse_name(image_name, category_name)
+
+    try:
+        Category = registry.get_category(category_name)
+        category = Category(parsed_id)
+        category.delete()
+    except StoreException as e:
+        return e.response()
 
     return {'status': 'ok'}

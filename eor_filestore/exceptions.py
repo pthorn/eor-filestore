@@ -13,10 +13,13 @@ class StoreException(Exception):
         self.exc = exc
 
     def __str__(self):
+        s = '%s(%s)' % (self.__class__.__name__, self.msg)
         if self.exc:
-            return self.__class__.__name__ + ': ' + str(self.exc)
-        else:
-            return self.__class__.__name__
+            s = s + ': ' + str(self.exc)
+        return s
+
+    def __repr__(self):
+        return self.__str__()
 
     def response(self):
         resp = {'status': 'error'}
@@ -26,6 +29,25 @@ class StoreException(Exception):
             resp['message'] = self.msg
 
         return resp
+
+
+class BadCategoryException(StoreException):
+
+    def __init__(self, category_name):
+        super().__init__(
+            code='bad-category',
+            msg='Category not registered: %r' % category_name,
+            detail=category_name
+        )
+
+
+class BadVariantException(StoreException):
+
+    def __init__(self, category_name, variant_name):
+        super().__init__(
+            code='bad-variant',
+            msg='Variant not registered: %r.%r' % (category_name, variant_name)
+        )
 
 
 class BadNameException(StoreException):
