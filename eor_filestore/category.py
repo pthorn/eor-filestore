@@ -1,14 +1,14 @@
 # coding: utf-8
 
 from .file_id import FileID
-from .variant import Variant
-from .image_variants import AutoThumbnail
+from .variant import VariantFactory
+from .images.autothumbnail import AutoThumbnail
 from .exceptions import BadVariantException
 
 
 class Category(object):
     category = 'images'
-    original = None
+    #original = None
     variants = []
 
     @classmethod
@@ -20,19 +20,19 @@ class Category(object):
     def __init__(self, parsed_id):
         self.parsed_id = parsed_id
 
-        if not self.original:
-            self.original = AutoThumbnail()  # TODO!
+        #if not self.original:
+        #    self.original = AutoThumbnail()  # TODO!
 
         # TODO do this once on app server startup
-        if len(self.variants) == 0:
-            self.variants.append(AutoThumbnail())
+        #if len(self.variants) == 0:
+        #    self.variants.append(AutoThumbnail())
 
     def get_variant(self, variant_name=None):
-        if variant_name is None:
-            return self.original.get(
-                category=self,
-                parsed_id=self.parsed_id
-            )  # TODO params?
+        #if variant_name is None:
+        #    return self.original.get(
+        #        category=self,
+        #        parsed_id=self.parsed_id
+        #    )  # TODO params?
 
         for v in self.variants:
             if v.matches_exactly(variant_name):
@@ -53,18 +53,14 @@ class Category(object):
         raise BadVariantException(self.category, variant_name)
 
     def _save_new(self, file_obj):
-        # generate original
-        self.original.get(
-            category=self,
-            parsed_id=self.parsed_id
-        ).save(file_obj)
-
-        # generate variants if reqd
-        for v in self.variants:
-            if v.generate_on_upload('WTF TODO'):
+        for v in self.variants:  # [self.original, *self.variants]:
+            print('v.config', v.config)
+            if v.config.save == VariantFactory.ON_UPLOAD:
                 v.get(
                     category=self,
-                    parsed_id=self.parsed_id
+                    parsed_id=self.parsed_id,
+                    variant_name=v.config.name
                 ).save(file_obj)
+                file_obj.seek(0)  # rewind
 
         return self

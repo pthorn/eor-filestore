@@ -7,7 +7,7 @@ from io import BytesIO
 
 from PIL import Image
 
-from .exceptions import FileException, NotAnImageException
+from ..exceptions import FileException, NotAnImageException
 
 import logging
 log = logging.getLogger(__name__)
@@ -73,21 +73,8 @@ def make_thumbnail_keep_proportions(image, size):
 def save_image(image, save_path, quality):
     """
     """
-
     if os.path.exists(save_path):
         log.warn('overwriting existing image: %s', save_path)
-
-    save_dir = os.path.dirname(save_path)
-    if not os.path.exists(save_dir):
-        #log.warn('save_uploaded_image(): creating directory %s', save_dir)
-        try:
-            os.makedirs(save_dir)
-        except OSError as e:
-            # this can happen if multiple images are uploaded concurrently
-            if e.errno == errno.EEXIST:
-                pass
-            else:
-                raise
 
     image.save(save_path, quality=quality)
 
