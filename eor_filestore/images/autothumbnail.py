@@ -18,8 +18,10 @@ class AutoThumbnail(Thumbnail):
     """
     generates thumbnails for variant name such as 800x600
     """
-    def __init__(self, save=VariantFactory.NEVER, quality=50, default_resize=Thumbnail.FIT):
-        super().__init__(None, save, quality=quality, resize=default_resize)
+    def __init__(self, save=VariantFactory.NEVER, quality=50,
+                 default_resize=Thumbnail.FIT, progressive_jpeg=False):
+        super().__init__(None, save, quality=quality, resize=default_resize,
+                         progressive_jpeg=progressive_jpeg)
 
     def matches_wildcard(self, variant_name):
         return thumbspec_regex.match(variant_name) is not None
@@ -44,7 +46,8 @@ class AutoThumbnailWorker(ThumbnailWorker):
             self._save_to_file(pil_variant)
 
         data, size = save_image_to_buffer(
-            pil_variant, self.parsed_id.ext, self.config.quality
+            pil_variant, self.parsed_id.ext, self.config.quality,
+            progressive=self.config.progressive_jpeg
         )
 
         return data, size

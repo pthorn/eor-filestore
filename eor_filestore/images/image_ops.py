@@ -70,20 +70,20 @@ def make_thumbnail_keep_proportions(image, size):
     return image
 
 
-def save_image(image, save_path, quality):
+def save_image(image, save_path, quality, progressive=False):
     """
     """
     if os.path.exists(save_path):
         log.warn('overwriting existing image: %s', save_path)
 
-    image.save(save_path, quality=quality)
+    image.save(save_path, quality=quality, progressive=progressive)
 
 
-def save_image_to_buffer(image, extension, quality):
+def save_image_to_buffer(image, extension, quality, progressive=False):
     data = BytesIO()
     # Pillow uses name attribute to infer image format
     data.name = 'foo.{}'.format(extension)
-    image.save(data, quality=quality)
+    image.save(data, quality=quality, progressive=progressive)
 
     # calculate size
     data.seek(0, os.SEEK_END)

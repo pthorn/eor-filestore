@@ -23,8 +23,10 @@ class Thumbnail(VariantFactory):
         FIT: make_thumbnail_keep_proportions
     }
 
-    def __init__(self, name, size, save=VariantFactory.NEVER, quality=50, resize=FIT):
-        super().__init__(name, save, size=size, quality=quality, resize=resize)
+    def __init__(self, name, size, save=VariantFactory.NEVER,
+                 quality=50, resize=FIT, progressive_jpeg=False):
+        super().__init__(name, save, size=size, quality=quality,
+                         resize=resize, progressive_jpeg=progressive_jpeg)
 
     def get_worker_class(self):
         return ThumbnailWorker
@@ -58,7 +60,8 @@ class ThumbnailWorker(Variant):
     def _save_to_file(self, pil_image):
         print('ThumbnailWorker._save_to_file()', self.fs_path(), pil_image.size)
         self._mkdirs()
-        save_image(pil_image, self.fs_path(), self.config.quality)
+        save_image(pil_image, self.fs_path(), quality=self.config.quality,
+                   progressive=self.config.progressive_jpeg)
         # TODO jpegoptim
 
     def _resize(self, pil_image, size=None, resize=None):
