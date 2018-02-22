@@ -65,11 +65,11 @@ def _parse_thumbspec(spec):
         raise BadNameException(msg='bad thumbspec %r' % spec)
 
     size = (int(m.group(1)), int(m.group(2)))
-    algo = m.group(3).upper() or 'F'
+    algo = m.group(3).upper() or 'T'
 
     algos = {
-        'F': Thumbnail.FILL,
-        'L': Thumbnail.FIT
+        'L': Thumbnail.FILL,
+        'T': Thumbnail.FIT
     }
 
     try:
