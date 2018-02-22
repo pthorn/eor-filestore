@@ -20,20 +20,12 @@ class Category(object):
     def __init__(self, parsed_id):
         self.parsed_id = parsed_id
 
-        #if not self.original:
-        #    self.original = AutoThumbnail()  # TODO!
-
         # TODO do this once on app server startup
-        #if len(self.variants) == 0:
-        #    self.variants.append(AutoThumbnail())
+        if len(self.variants) == 0:
+            self.variants.append(VariantFactory(save=VariantFactory.ON_UPLOAD))
+            self.variants.append(AutoThumbnail())
 
     def get_variant(self, variant_name=None):
-        #if variant_name is None:
-        #    return self.original.get(
-        #        category=self,
-        #        parsed_id=self.parsed_id
-        #    )  # TODO params?
-
         for v in self.variants:
             if v.matches_exactly(variant_name):
                 return v.get(
@@ -53,7 +45,7 @@ class Category(object):
         raise BadVariantException(self.category, variant_name)
 
     def _save_new(self, file_obj):
-        for v in self.variants:  # [self.original, *self.variants]:
+        for v in self.variants:
             print('v.config', v.config)
             if v.config.save == VariantFactory.ON_UPLOAD:
                 v.get(
