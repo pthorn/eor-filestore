@@ -1,7 +1,7 @@
 from .registry import Registry
 from .file_id import src
 from .category import Category
-from .variant import VariantFactory, Variant
+from .variant import Variant, VariantWorker
 from .images.thumbnail import Thumbnail
 from .images.autothumbnail import AutoThumbnail
 

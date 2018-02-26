@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from .file_id import FileID
-from .variant import VariantFactory
+from .variant import Variant
 from .images.autothumbnail import AutoThumbnail
 from .exceptions import BadVariantException
 
@@ -22,7 +22,7 @@ class Category(object):
 
         # TODO do this once on app server startup
         if len(self.variants) == 0:
-            self.variants.append(VariantFactory(save=VariantFactory.ON_UPLOAD))
+            self.variants.append(Variant(save=Variant.ON_UPLOAD))
             self.variants.append(AutoThumbnail())
 
     def get_variant(self, variant_name=None):
@@ -47,7 +47,7 @@ class Category(object):
     def _save_new(self, file_obj):
         for v in self.variants:
             print('v.config', v.config)
-            if v.config.save == VariantFactory.ON_UPLOAD:
+            if v.config.save == Variant.ON_UPLOAD:
                 v.get(
                     category=self,
                     parsed_id=self.parsed_id,

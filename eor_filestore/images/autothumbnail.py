@@ -3,7 +3,7 @@ import re
 from io import BytesIO
 
 from .thumbnail import Thumbnail, ThumbnailWorker
-from ..variant import VariantFactory, Variant
+from ..variant import Variant, VariantWorker
 from .image_ops import (
     open_image,
     save_image,
@@ -18,7 +18,7 @@ class AutoThumbnail(Thumbnail):
     """
     generates thumbnails for variant name such as 800x600
     """
-    def __init__(self, save=VariantFactory.NEVER, quality=50,
+    def __init__(self, save=Variant.NEVER, quality=50,
                  default_resize=Thumbnail.FIT, progressive_jpeg=False):
         super().__init__(None, save, quality=quality, resize=default_resize,
                          progressive_jpeg=progressive_jpeg)
@@ -42,7 +42,7 @@ class AutoThumbnailWorker(ThumbnailWorker):
 
         pil_variant = self._resize(pil_original_image, size=size, resize=algo)
 
-        if self.config.save in (VariantFactory.ON_REQUEST, VariantFactory.ON_UPLOAD):
+        if self.config.save in (Variant.ON_REQUEST, Variant.ON_UPLOAD):
             self._save_to_file(pil_variant)
 
         data, size = save_image_to_buffer(

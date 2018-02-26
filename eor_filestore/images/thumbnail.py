@@ -2,7 +2,7 @@ import os
 import re
 from io import BytesIO
 
-from ..variant import VariantFactory, Variant
+from ..variant import Variant, VariantWorker
 from .image_ops import (
     open_image,
     save_image,
@@ -14,7 +14,7 @@ from ..attrdict import AttrDict
 from ..exceptions import BadNameException
 
 
-class Thumbnail(VariantFactory):
+class Thumbnail(Variant):
     FILL = 'FILL'
     FIT = 'FIT'
 
@@ -23,7 +23,7 @@ class Thumbnail(VariantFactory):
         FIT: make_thumbnail_keep_proportions
     }
 
-    def __init__(self, name, size, save=VariantFactory.NEVER,
+    def __init__(self, name, size, save=Variant.NEVER,
                  quality=50, resize=FIT, progressive_jpeg=False):
         super().__init__(name, save, size=size, quality=quality,
                          resize=resize, progressive_jpeg=progressive_jpeg)
@@ -32,7 +32,7 @@ class Thumbnail(VariantFactory):
         return ThumbnailWorker
 
 
-class ThumbnailWorker(Variant):
+class ThumbnailWorker(VariantWorker):
 
     def save(self, file_obj):
         pil_image = open_image(file_obj)
@@ -48,7 +48,7 @@ class ThumbnailWorker(Variant):
 
         pil_variant = self._resize(pil_original_image)
 
-        if self.config.save in (VariantFactory.ON_REQUEST, VariantFactory.ON_UPLOAD):
+        if self.config.save in (Variant.ON_REQUEST, Variant.ON_UPLOAD):
             self._save_to_file(pil_variant)
 
         data, size = save_image_to_buffer(

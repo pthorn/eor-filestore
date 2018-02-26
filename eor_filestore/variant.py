@@ -7,7 +7,7 @@ from eor_settings import get_setting
 from .attrdict import AttrDict
 
 
-class VariantFactory(object):
+class Variant(object):
     NEVER      = 'NEVER'
     ON_UPLOAD  = 'ON_UPLOAD'
     ON_REQUEST = 'ON_REQUEST'
@@ -16,7 +16,7 @@ class VariantFactory(object):
         """
         Extend in subclasses to pass more config parameters
         :param name: variant name
-        :param save: one of VariantFactory.NEVER, ON_UPLOAD, ON_REQUEST
+        :param save: one of Variant.NEVER, ON_UPLOAD, ON_REQUEST
         :param kwargs: additional config parameters (will be saved into self.config)
         """
         self.config = AttrDict(
@@ -41,7 +41,7 @@ class VariantFactory(object):
         Implement in a subclass
         :return: worker class
         """
-        return Variant
+        return VariantWorker
 
     def get(self, category, parsed_id, variant_name):
         """
@@ -53,10 +53,10 @@ class VariantFactory(object):
         )
 
 
-class Variant(object):
+class VariantWorker(object):
     def __init__(self, factory, config, category, parsed_id, variant_name):
         """
-        This constructor is called by VariantFactory.get()
+        This constructor is called by Variant.get()
         """
         self.factory = factory
         self.config = config
@@ -87,7 +87,7 @@ class Variant(object):
         :param file_obj: cgi.FieldStorage object
         """
         save_path = self.fs_path()
-        print('Variant.save()', save_path)
+        print('VariantWorker.save()', save_path)
 
         if os.path.exists(save_path):
             log.warn('overwriting existing file: %s', save_path)
