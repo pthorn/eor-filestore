@@ -23,10 +23,25 @@ class Thumbnail(Variant):
         FIT: make_thumbnail_keep_proportions
     }
 
-    def __init__(self, name, size, save=Variant.NEVER,
-                 quality=50, resize=FIT, progressive_jpeg=False):
-        super().__init__(name, save, size=size, quality=quality,
-                         resize=resize, progressive_jpeg=progressive_jpeg)
+    def __init__(
+        self,
+        name,
+        size,
+        save=Variant.NEVER,
+        quality=50,
+        resize=FIT,
+        progressive_jpeg=False,
+        **kwargs
+    ):
+        super().__init__(
+            name,
+            save,
+            size=size,
+            quality=quality,
+            resize=resize,
+            progressive_jpeg=progressive_jpeg,
+            **kwargs
+        )
 
     def get_worker_class(self):
         return ThumbnailWorker
