@@ -51,7 +51,7 @@ class ThumbnailWorker(VariantWorker):
 
     def save(self, file_obj):
         pil_image = open_image(file_obj)
-        resized_image = self._resize(pil_image)
+        resized_image = self.postprocess(self._resize(pil_image))
         self._save_to_file(resized_image)
 
     def generate(self):
@@ -61,7 +61,7 @@ class ThumbnailWorker(VariantWorker):
         original = self.category.get_variant()
         pil_original_image = open_image(original.fs_path())
 
-        pil_variant = self._resize(pil_original_image)
+        pil_variant = self.postprocess(self._resize(pil_original_image))
 
         if self.config.save in (Variant.ON_REQUEST, Variant.ON_UPLOAD):
             self._save_to_file(pil_variant)
@@ -71,6 +71,14 @@ class ThumbnailWorker(VariantWorker):
         )
 
         return data, size
+
+    def postprocess(self, image):
+        """
+        override in subclasses
+        :param image: resized image
+        :return: processed image
+        """
+        return image
 
     def _save_to_file(self, pil_image):
         print('ThumbnailWorker._save_to_file()', self.fs_path(), pil_image.size)
