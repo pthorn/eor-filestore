@@ -8,7 +8,8 @@ from .image_ops import (
     save_image,
     save_image_to_buffer,
     make_thumbnail_crop_to_size,
-    make_thumbnail_keep_proportions
+    make_thumbnail_keep_proportions,
+    make_thumbnail_fit_width
 )
 from ..attrdict import AttrDict
 from ..exceptions import BadNameException
@@ -17,10 +18,12 @@ from ..exceptions import BadNameException
 class Thumbnail(Variant):
     FILL = 'FILL'
     FIT = 'FIT'
+    WIDTH = 'WIDTH'
 
     algos = {
         FILL: make_thumbnail_crop_to_size,
-        FIT: make_thumbnail_keep_proportions
+        FIT: make_thumbnail_keep_proportions,
+        WIDTH: make_thumbnail_fit_width
     }
 
     def __init__(

@@ -37,6 +37,9 @@ def open_image(source_file):
     return image
 
 
+# TODO FILL
+# Thumbnail size is exactly the specified size. Either top and bottom or left and right sides
+# have been cropped to fit proportions.
 def make_thumbnail_crop_to_size(image, size):
     image = image.copy()
 
@@ -61,11 +64,29 @@ def make_thumbnail_crop_to_size(image, size):
     return image
 
 
+# TODO FIT
+# Thumbnail fits into the specified maximum size while keeping proportions. Resulting
+# thumbnail size may be smaller on one of the dimensions
 def make_thumbnail_keep_proportions(image, size):
     image = image.copy()
 
     if image.size[0] > size[0] or image.size[1] > size[1]:
             image.thumbnail(size, Image.ANTIALIAS)
+
+    return image
+
+
+# TODO FIT WIDTH
+# Thumbnail width is exactly the specified width, height is calculated to keep
+# original image proportions. Height is ignored.
+def make_thumbnail_fit_width(image, size):
+    if image.size[0] <= size[0]:
+        return image
+
+    image = image.copy()
+    factor = image.size[0] / size[0]
+    thumb_size = (size[0], image.size[1] / factor)
+    image.thumbnail(thumb_size, Image.ANTIALIAS)
 
     return image
 
