@@ -31,11 +31,6 @@ def get(request):
         log.warn('1 %r', e)  # TODO
         raise HTTPNotFound()
 
-    #try:
-    #variant = Image(parsed_id).variant(variant)
-    #except NoImage:
-    #    raise HTTPNotFound()
-
     if variant.exists():
         return FileResponse(variant.fs_path(), request=request)
 
@@ -73,11 +68,6 @@ def upload(request):
     if not isinstance(fieldstorage, cgi.FieldStorage):
         raise HTTPBadRequest()
 
-    # try:
-    #     image = Image.new(fieldstorage.filename, fieldstorage.file, category)
-    # except StoreException as e:
-    #     return e.response()
-
     try:
         Category = registry.get_category(category_name)
         category = Category.save_new(fieldstorage.file, fieldstorage.filename)
@@ -87,10 +77,8 @@ def upload(request):
     return {
         'status': 'ok',
         'data': {
-            # 'id': str(image.parsed_id),
-            # 'src': src(request, image.parsed_id)
             'id': str(category.parsed_id),
-            'src': src(request, category.parsed_id)
+            'src': src(request, category.parsed_id)  # TODO variant_name = first variant name?
         }
     }
 
