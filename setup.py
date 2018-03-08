@@ -6,7 +6,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 requires = [
     'pyramid >= 1.8.4',
-    'Pillow >= 4.1.1',
+    'Pillow >= 5.0.0',
     'eor-settings'
 ]
 
