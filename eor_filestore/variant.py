@@ -1,6 +1,8 @@
 # coding: utf-8
 
-import os, shutil
+import os
+import shutil
+import errno
 
 from eor_settings import get_setting
 
