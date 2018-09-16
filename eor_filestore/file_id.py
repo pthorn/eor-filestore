@@ -65,6 +65,14 @@ class FileID(object):
         name_split.append(self.ext)
         return '.'.join(name_split)
 
+    def as_json(self):
+        return dict(
+            uuid=self.uuid,
+            category=self.category,
+            slug=self.slug,
+            ext=self.ext
+        )
+
     def __str__(self):
         return ','.join([self.uuid, self.category, self.slug, self.ext])
 

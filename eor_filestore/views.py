@@ -78,6 +78,7 @@ def upload(request):
         'status': 'ok',
         'data': {
             'id': str(category.parsed_id),
+            'id_parts': category.parsed_id.as_json(),
             'src': src(request, category.parsed_id)  # TODO variant_name = first variant name?
         }
     }
