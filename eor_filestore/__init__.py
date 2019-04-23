@@ -18,10 +18,11 @@ def includeme(config):
     ParseSettings(settings, prefix='eor-filestore')\
         .path('path', default='../store')
 
-    config.add_route('eor-filestore.upload-default', R'/', request_method='POST')
-    config.add_route('eor-filestore.upload', R'/:category', request_method='POST')
     # TODO generate URL pattern from SUBDIRS and SUBDIR_CHARS
-    config.add_route('eor-filestore.get-image', R'/:category/:a/:b/:name', request_method='GET')
-    config.add_route('eor-filestore.delete', R'/:name', request_method='DELETE')
+    config.add_route('eor-filestore.get-image',      R'/:category/:a/:b/:name', request_method='GET')
+    config.add_route('eor-filestore.get-list',       R'/:category/list', request_method='GET')
+    config.add_route('eor-filestore.upload-default', R'/', request_method='POST')
+    config.add_route('eor-filestore.upload',         R'/:category', request_method='POST')
+    config.add_route('eor-filestore.delete',         R'/:name', request_method='DELETE')
 
     config.scan('.views')

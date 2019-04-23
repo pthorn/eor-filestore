@@ -55,6 +55,24 @@ def get(request):
     )
 
 
+@view_config(route_name='eor-filestore.get-list', renderer='json')
+def get_list(request):
+    category_name = request.matchdict['category']
+
+    try:
+        Category = registry.get_category(category_name)
+    except StoreException as e:
+        log.warn('1 %r', e)  # TODO
+        raise HTTPNotFound()
+
+    category = Category(None)  # TODO API workaroud
+
+    return {
+        'status': 'ok',
+        'data': category.list_files()
+    }
+
+
 @view_config(route_name='eor-filestore.upload-default', renderer='json')
 @view_config(route_name='eor-filestore.upload', renderer='json')
 def upload(request):

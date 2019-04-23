@@ -1,5 +1,10 @@
 # coding: utf-8
 
+import os
+import pathlib
+
+from eor_settings import get_setting
+
 from .file_id import FileID
 from .variant import Variant
 from .images.autothumbnail import AutoThumbnail
@@ -43,6 +48,16 @@ class Category(object):
                 )  # TODO params?
 
         raise BadVariantException(self.category, variant_name)
+    def list_files(self):
+        p = pathlib.Path(self.get_fs_path())
+        return [
+            FileID.parse_name(f.name, self.category)[0].as_json()
+            for f in p.rglob("*") if f.is_file()
+        ]
+
+    def get_fs_path(self):
+        comps = [get_setting('eor-filestore.path'), self.category]
+        return os.path.abspath(os.path.join(*comps))
 
     def _save_new(self, file_obj):
         for v in self.variants:
