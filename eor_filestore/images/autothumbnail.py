@@ -37,7 +37,7 @@ class AutoThumbnailWorker(ThumbnailWorker):
         :return: (BytesIO object with image data, data length for Content-Length)
         """
         original = self.category.get_variant()
-        pil_original_image = open_image(original.fs_path())
+        pil_original_image = open_image(self.parsed_id, original.fs_path())
         size, algo = _parse_thumbspec(self.variant_name)
 
         pil_variant = self._resize(pil_original_image, size=size, resize=algo)

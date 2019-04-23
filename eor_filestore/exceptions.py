@@ -6,16 +6,18 @@ log = logging.getLogger(__name__)
 
 class StoreException(Exception):
 
-    def __init__(self, code=None, msg=None, detail=None, exc=None):
+    def __init__(self, id=None, code=None, detail=None, exc=None):
+        self.id = id
         self.code = code
-        self.msg = msg
-        self.detail = detail
+        self.detail = detail or {}
         self.exc = exc
 
     def __str__(self):
-        s = '%s(%s)' % (self.__class__.__name__, self.msg)
+        s = '%s(%s)' % (self.__class__.__name__, self.id)
+        if self.detail:
+            s = s + ' : %r' % (self.detail,)
         if self.exc:
-            s = s + ': ' + str(self.exc)
+            s = s + ' [%s]' % (str(self.exc),)
         return s
 
     def __repr__(self):
@@ -25,28 +27,37 @@ class StoreException(Exception):
         resp = {'status': 'error'}
         if self.code:
             resp['code'] = self.code
-        if self.msg:
-            resp['message'] = self.msg
+
+        if self.id:
+            self.detail['id'] = str(id)
+        if self.detail:
+            resp['detail'] = self.detail
 
         return resp
 
 
 class BadCategoryException(StoreException):
 
-    def __init__(self, category_name):
+    def __init__(self, category_name, **kwargs):
         super().__init__(
             code='bad-category',
-            msg='Category not registered: %r' % category_name,
-            detail=category_name
+            detail={
+                'category': category_name,
+            },
+            **kwargs
         )
 
 
 class BadVariantException(StoreException):
 
-    def __init__(self, category_name, variant_name):
+    def __init__(self, category_name, variant_name, **kwargs):
         super().__init__(
             code='bad-variant',
-            msg='Variant not registered: %r.%r' % (category_name, variant_name)
+            detail={
+                'category': category_name,
+                'variant': variant_name
+            },
+            **kwargs
         )
 
 

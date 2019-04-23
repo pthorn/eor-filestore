@@ -53,7 +53,7 @@ class Thumbnail(Variant):
 class ThumbnailWorker(VariantWorker):
 
     def save(self, file_obj):
-        pil_image = open_image(file_obj)
+        pil_image = open_image(self.parsed_id, file_obj)
         resized_image = self.postprocess(self._resize(pil_image))
         self._save_to_file(resized_image)
 
@@ -62,7 +62,7 @@ class ThumbnailWorker(VariantWorker):
         :return: (BytesIO object with image data, data length for Content-Length)
         """
         original = self.category.get_variant()
-        pil_original_image = open_image(original.fs_path())
+        pil_original_image = open_image(self.parsed_id, original.fs_path())
 
         pil_variant = self.postprocess(self._resize(pil_original_image))
 

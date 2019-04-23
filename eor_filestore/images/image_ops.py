@@ -22,14 +22,14 @@ def get_image_format(file_obj):
         return 'jpg'
 
 
-def open_image(source_file):
+def open_image(parsed_id, source_file):
     try:
         image = Image.open(source_file)
     except IOError as e:
         if str(e).find('annot identify image file') != -1:
-            raise NotAnImageException()
+            raise NotAnImageException(id=parsed_id, exc=e)
         else:
-            raise FileException(exc=e)
+            raise FileException(id=parsed_id, exc=e)
 
     if image.mode != 'RGB':
         image = image.convert('RGB')

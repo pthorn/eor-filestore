@@ -47,7 +47,8 @@ class Category(object):
                     variant_name=variant_name
                 )  # TODO params?
 
-        raise BadVariantException(self.category, variant_name)
+        raise BadVariantException(self.category, variant_name, id=self.parsed_id)
+
     def list_files(self):
         p = pathlib.Path(self.get_fs_path())
         return [
