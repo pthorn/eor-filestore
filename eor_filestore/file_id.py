@@ -27,7 +27,7 @@ class FileID(object):
     def parse(cls, id):
         split = id.split(',')
         if len(split) != 4:
-            raise BadNameException(msg='bad id %r' % id)
+            raise BadNameException(id)
 
         return cls(
             slug=split[2],
@@ -40,7 +40,7 @@ class FileID(object):
     def parse_name(cls, name, category):
         split = name.split('.')
         if len(split) not in (3, 4):
-            raise BadNameException(msg='bad name %r' % name)
+            raise BadNameException(name)
 
         # TODO check uuid using regex
 

@@ -63,8 +63,14 @@ class BadVariantException(StoreException):
 
 class BadNameException(StoreException):
 
-    def __init__(self, **kwargs):
-        super().__init__(code='bad-name', **kwargs)
+    def __init__(self, name, **kwargs):
+        super().__init__(
+            code='bad-name',
+            detail={
+                'name': name
+            },
+            **kwargs
+        )
 
 
 class NotAnImageException(StoreException):
