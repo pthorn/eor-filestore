@@ -65,6 +65,9 @@ class FileID(object):
         name_split.append(self.ext)
         return '.'.join(name_split)
 
+    def make_wildcard(self):
+        return '%s.%s.*%s' % (self.slug, self.uuid, self.ext)
+
     def as_json(self):
         return dict(
             uuid=self.uuid,

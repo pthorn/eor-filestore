@@ -1,5 +1,5 @@
 from .registry import Registry
-from .file_id import src
+from .file_id import src, FileID
 from .category import Category
 from .variant import Variant, VariantWorker
 from .images.thumbnail import Thumbnail
@@ -26,3 +26,12 @@ def includeme(config):
     config.add_route('eor-filestore.delete',         R'/:name', request_method='DELETE')
 
     config.scan('.views')
+
+
+def delete_by_id(file_id):
+    # TODO exceptions
+    parsed_id = FileID.parse(file_id)
+
+    Category = registry.get_category(parsed_id.category)
+    category = Category(parsed_id)
+    category.delete()

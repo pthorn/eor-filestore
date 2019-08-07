@@ -1,5 +1,8 @@
 # coding: utf-8
 
+import logging
+log = logging.getLogger(__name__)
+
 import os
 import shutil
 import errno
@@ -89,10 +92,11 @@ class VariantWorker(object):
         :param file_obj: cgi.FieldStorage object
         """
         save_path = self.fs_path()
-        print('VariantWorker.save()', save_path)
 
         if os.path.exists(save_path):
-            log.warn('overwriting existing file: %s', save_path)
+            log.warn('VariantWorker.save(): overwriting existing file: %s', save_path)
+        else:
+            log.debug('VariantWorker.save(): saving to path: %s', save_path)
 
         self._mkdirs()
 
@@ -101,7 +105,7 @@ class VariantWorker(object):
 
     def generate(self):
         """
-        :return: (file-like object, size for Content-Length)
+        :return: tuple (file-like object, size for Content-Length)
         """
         raise NotImplementedError()
 

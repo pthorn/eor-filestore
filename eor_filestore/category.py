@@ -6,7 +6,7 @@ import pathlib
 from eor_settings import get_setting
 
 from .file_id import FileID
-from .variant import Variant
+from .variant import Variant, _subdirs
 from .images.autothumbnail import AutoThumbnail
 from .exceptions import BadVariantException
 
@@ -49,6 +49,12 @@ class Category(object):
 
         raise BadVariantException(self.category, variant_name, id=self.parsed_id)
 
+    def delete(self):
+        path = pathlib.Path(self.get_fs_path(), _subdirs(self.parsed_id.uuid))
+
+        for p in path.glob(self.parsed_id.make_wildcard()):
+            os.unlink(str(p))
+
     def list_files(self):
         p = pathlib.Path(self.get_fs_path())
         return [
@@ -57,6 +63,7 @@ class Category(object):
         ]
 
     def get_fs_path(self):
+        """Get path to directory where files for this category are stored."""
         comps = [get_setting('eor-filestore.path'), self.category]
         return os.path.abspath(os.path.join(*comps))
 
