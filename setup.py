@@ -12,7 +12,7 @@ requires = [
 
 setup(
     name='eor-filestore',
-    version='2.0.0',
+    version='2.1.0',
     description='A file upload and storage backend for the Pyramid framework',
     long_description='',
     classifiers=[
