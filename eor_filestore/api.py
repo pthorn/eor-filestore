@@ -10,6 +10,10 @@ def delete_by_id(file_id):
 
     from . import registry
 
-    Category = registry.get_category(parsed_id.category)
+    try:
+        Category = registry.get_category(parsed_id.category)
+    except BadCategoryException:
+        return
+
     category = Category(parsed_id)
     category.delete()
