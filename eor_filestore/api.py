@@ -1,5 +1,24 @@
 from .file_id import FileID
-from .exceptions import BadCategoryException, BadNameException
+from .exceptions import (
+    StoreException, BadCategoryException, BadNameException
+)
+
+
+def src(request, id, variant=None):
+    """
+    :return: URL of the file
+    """
+    if not isinstance(id, FileID):
+        try:
+            id = FileID.parse(id)
+        except StoreException:
+            return ''
+
+    # TODO '//' + get_setting('static-domain') ?
+
+    return request.route_url('eor-filestore.get-image',
+        category=id.category, a=id.uuid[0], b=id.uuid[1],  # TODO respect SUBDIRS and SUBDIR_CHARS
+        name=id.make_name(variant))
 
 
 def delete_by_id(file_id):

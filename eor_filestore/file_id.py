@@ -84,20 +84,6 @@ class FileID(object):
             self.slug, self.uuid, self.category, self.ext)
 
 
-def src(request, id, variant=None):
-    """
-    :return: URL of the file
-    """
-    if not isinstance(id, FileID):
-        id = FileID.parse(id)
-
-    # TODO '//' + get_setting('static-domain') ?
-
-    return request.route_url('eor-filestore.get-image',
-        category=id.category, a=id.uuid[0], b=id.uuid[1],  # TODO respect SUBDIRS and SUBDIR_CHARS
-        name=id.make_name(variant))
-
-
 def _slugify(val, max_len=32):
     """
     from https://github.com/django/django/blob/master/django/utils/text.py#L413

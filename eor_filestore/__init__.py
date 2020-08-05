@@ -1,10 +1,9 @@
 from .registry import Registry
-from .file_id import src
 from .category import Category
 from .variant import Variant, VariantWorker
 from .images.thumbnail import Thumbnail
 from .images.autothumbnail import AutoThumbnail
-from .api import delete_by_id
+from .api import delete_by_id, src
 
 
 registry = Registry()

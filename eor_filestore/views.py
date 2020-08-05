@@ -4,7 +4,8 @@ from pyramid.response import Response, FileResponse, FileIter, _guess_type
 from pyramid.httpexceptions import HTTPNotFound, HTTPBadRequest
 
 from . import registry
-from .file_id import FileID, src
+from .file_id import FileID
+from .api import src
 from .exceptions import StoreException, FileException
 
 import logging
