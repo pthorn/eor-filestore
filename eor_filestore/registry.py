@@ -30,8 +30,7 @@ class Registry(object):
 
             self.category_delegates[delegate.category] = delegate
 
-            log.debug('Registry(%r): registered endpoint: name %r, entity %r',
-                delegate.category, delegate)
+            log.debug('Registered category %r', delegate.category)
 
             return delegate
 
